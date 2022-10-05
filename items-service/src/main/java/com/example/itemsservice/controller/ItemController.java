@@ -2,6 +2,7 @@ package com.example.itemsservice.controller;
 
 import com.example.itemsservice.models.Item;
 import com.example.itemsservice.service.ItemService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 public class ItemController {
 
+    @Qualifier("ServiceFeign")
     private final ItemService itemService;
 
     public ItemController(ItemService itemService) {

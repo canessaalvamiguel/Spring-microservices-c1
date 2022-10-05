@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+@Service("serviceRestTemplate")
 public class ItemServiceImpl implements ItemService{
 
     private final RestTemplate restClient;
