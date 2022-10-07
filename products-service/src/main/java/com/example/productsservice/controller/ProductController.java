@@ -16,11 +16,11 @@ public class ProductController {
 
     private final IProductService productService;
 
-    @Value("${server.port}")
-    private Integer port;
+    private Environment env;
 
-    public ProductController(IProductService productService) {
+    public ProductController(IProductService productService, Environment env) {
         this.productService = productService;
+        this.env = env;
     }
 
     @GetMapping("/products")
@@ -28,7 +28,7 @@ public class ProductController {
         return productService.findAll()
                 .stream()
                 .map(x -> {
-                    x.setPort(port);
+                    x.setPort(Integer.parseInt(env.getProperty("local.server.port")));
                     return x;
                 })
                 .collect(Collectors.toList());
@@ -37,8 +37,8 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public Product getProductById(@PathVariable("id") Long id) throws InterruptedException {
         Product product = productService.findById(id);
-        product.setPort(port);
-        Thread.sleep(2000L);
+        product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+        //Thread.sleep(2000L);
         return product;
     }
 }
