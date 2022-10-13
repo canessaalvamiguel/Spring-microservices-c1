@@ -6,9 +6,7 @@ import com.example.itemsservice.service.ItemService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +21,9 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public ResponseEntity<List<Item>> list(){
+    public ResponseEntity<List<Item>> list(@RequestParam(name = "name") String name, @RequestHeader(name = "token-request") String token){
+        System.out.println("RequestParam: "+ name);
+        System.out.println("RequestHeader: "+ token);
         return ResponseEntity.ok(itemService.findAll());
     }
     @HystrixCommand(fallbackMethod = "alternativeMethod")
