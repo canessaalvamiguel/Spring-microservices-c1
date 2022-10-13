@@ -21,7 +21,8 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public ResponseEntity<List<Item>> list(@RequestParam(name = "name") String name, @RequestHeader(name = "token-request") String token){
+    public ResponseEntity<List<Item>> list(@RequestParam(name = "name", required = false) String name,
+                                           @RequestHeader(name = "token-request", required = false) String token){
         System.out.println("RequestParam: "+ name);
         System.out.println("RequestHeader: "+ token);
         return ResponseEntity.ok(itemService.findAll());
