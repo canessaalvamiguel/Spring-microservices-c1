@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 @Component
-public class GlobalFilterSample implements GlobalFilter {
+public class GlobalFilterSample implements GlobalFilter, Ordered {
 
     private final Logger logger = LoggerFactory.getLogger(GlobalFilterSample.class);
 
@@ -43,5 +43,10 @@ public class GlobalFilterSample implements GlobalFilter {
 //                    .getHeaders()
 //                    .setContentType(MediaType.TEXT_PLAIN);
         }));
+    }
+
+    @Override
+    public int getOrder(){
+        return 1;
     }
 }
