@@ -8,13 +8,17 @@ import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 public class ItemController {
@@ -22,13 +26,19 @@ public class ItemController {
     @Qualifier("ServiceFeign")
     private final ItemService itemService;
 
+    @Value("${configuration.text}")
+    private String text;
+
     private final CircuitBreakerFactory cbFactory;
 
     private final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
-    public ItemController(ItemService itemService, CircuitBreakerFactory cbFactory) {
+    private final Environment env;
+
+    public ItemController(ItemService itemService, CircuitBreakerFactory cbFactory, Environment env) {
         this.itemService = itemService;
         this.cbFactory = cbFactory;
+        this.env = env;
     }
 
     @GetMapping("/items")
@@ -86,5 +96,22 @@ public class ItemController {
         Item item = new Item(product, amount);
 
         return CompletableFuture.supplyAsync( () -> ResponseEntity.ok(item) );
+    }
+
+    @GetMapping("/get-config")
+    public ResponseEntity<?> getConfig(@Value("${server.port}") String port){
+
+        logger.info("text: "+text);
+
+        Map<String, String> json = new HashMap<>();
+        json.put("text",text);
+        json.put("port",port);
+
+        if(env.getActiveProfiles().length > 0 && env.getActiveProfiles()[0].equals("dev")){
+            json.put("author.name", env.getProperty("configuration.author.name"));
+            json.put("author.email", env.getProperty("configuration.author.email"));
+        }
+
+        return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK);
     }
 }
