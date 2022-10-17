@@ -23,11 +23,24 @@ public class ProductServiceImpl implements IProductService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Product findById(Long id) {
         Boolean exists = productRepository.existsById(id);
         if(!exists)
             new RuntimeException("Product with id "+id+" doesn't exists");
 
         return productRepository.findById(id).get();
+    }
+
+    @Override
+    @Transactional
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
     }
 }

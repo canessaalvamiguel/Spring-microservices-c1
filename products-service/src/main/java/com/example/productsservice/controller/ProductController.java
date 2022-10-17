@@ -4,9 +4,8 @@ import com.example.productsservice.entity.Product;
 import com.example.productsservice.service.IProductService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,5 +44,27 @@ public class ProductController {
         if(id.equals(7L))
             TimeUnit.SECONDS.sleep(7L);
         return product;
+    }
+
+    @PostMapping("/products")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product create(@RequestBody Product product){
+        return productService.save(product);
+    }
+
+    @PutMapping("/products/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product edit(@RequestBody Product product, @PathVariable Long id){
+        Product productDb = productService.findById(id);
+        productDb.setName(product.getName());
+        productDb.setPrice(product.getPrice());
+
+        return productService.save(productDb);
+    }
+
+    @DeleteMapping("/products/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id){
+        productService.deleteById(id);
     }
 }
