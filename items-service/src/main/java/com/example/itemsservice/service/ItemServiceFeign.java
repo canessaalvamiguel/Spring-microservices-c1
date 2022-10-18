@@ -2,6 +2,7 @@ package com.example.itemsservice.service;
 
 import com.example.itemsservice.clients.ProductClientRest;
 import com.example.itemsservice.models.Item;
+import com.example.itemsservice.models.Product;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +31,20 @@ public class ItemServiceFeign implements ItemService {
     @Override
     public Item findById(Long id, Integer amount) {
         return new Item(clientFeign.details(id), amount);
+    }
+
+    @Override
+    public Product save(Product product) {
+        return clientFeign.create(product);
+    }
+
+    @Override
+    public Product update(Product product, Long id) {
+        return clientFeign.update(product, id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        clientFeign.delete(id);
     }
 }

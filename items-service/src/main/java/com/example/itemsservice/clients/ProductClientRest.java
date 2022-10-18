@@ -2,8 +2,7 @@ package com.example.itemsservice.clients;
 
 import com.example.itemsservice.models.Product;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,4 +14,13 @@ public interface ProductClientRest {
 
     @GetMapping("/products/{id}")
     public Product details(@PathVariable("id") Long id);
+
+    @PostMapping("/products")
+    public Product create(@RequestBody Product product);
+
+    @PutMapping("/products/{id}")
+    public Product update(@RequestBody Product product, @PathVariable("id") Long id);
+
+    @DeleteMapping("/products/{id}")
+    public void delete(@PathVariable("id") Long id);
 }
