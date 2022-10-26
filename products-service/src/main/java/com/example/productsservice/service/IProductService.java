@@ -1,6 +1,6 @@
 package com.example.productsservice.service;
 
-import com.example.productsservice.entity.Product;
+import com.example.commonsserver.models.Product;
 
 import java.util.List;
 

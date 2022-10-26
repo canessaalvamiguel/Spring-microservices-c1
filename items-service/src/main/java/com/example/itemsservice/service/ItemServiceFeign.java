@@ -2,10 +2,9 @@ package com.example.itemsservice.service;
 
 import com.example.itemsservice.clients.ProductClientRest;
 import com.example.itemsservice.models.Item;
-import com.example.itemsservice.models.Product;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-
+import com.example.commonsserver.models.Product;
 import java.util.List;
 import java.util.stream.Collectors;
 

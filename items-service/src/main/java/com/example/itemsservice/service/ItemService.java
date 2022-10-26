@@ -1,7 +1,7 @@
 package com.example.itemsservice.service;
 
 import com.example.itemsservice.models.Item;
-import com.example.itemsservice.models.Product;
+import com.example.commonsserver.models.Product;
 
 import java.util.List;
 

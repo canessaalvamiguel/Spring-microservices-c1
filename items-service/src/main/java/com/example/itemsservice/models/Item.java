@@ -1,5 +1,6 @@
 package com.example.itemsservice.models;
 
+import com.example.commonsserver.models.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -1,9 +1,8 @@
 package com.example.itemsservice.clients;
 
-import com.example.itemsservice.models.Product;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.commonsserver.models.Product;
 import java.util.List;
 
 @FeignClient(name = "products-service")

@@ -1,7 +1,6 @@
 package com.example.itemsservice.controller;
 
 import com.example.itemsservice.models.Item;
-import com.example.itemsservice.models.Product;
 import com.example.itemsservice.service.ItemService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
@@ -15,7 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.commonsserver.models.Product;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

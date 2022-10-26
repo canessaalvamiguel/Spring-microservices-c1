@@ -1,8 +1,7 @@
 package com.example.productsservice.controller;
 
-import com.example.productsservice.entity.Product;
+import com.example.commonsserver.models.Product;
 import com.example.productsservice.service.IProductService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
