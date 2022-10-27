@@ -20,7 +20,7 @@ public class User implements Serializable {
     @Column(length = 60)
     private String password;
 
-    private Integer enabled;
+    private Boolean enabled;
     private String firstName;
     private String lastName;
 
@@ -60,11 +60,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public Integer getEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Integer enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
