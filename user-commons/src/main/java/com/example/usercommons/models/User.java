@@ -23,6 +23,7 @@ public class User implements Serializable {
     private Boolean enabled;
     private String firstName;
     private String lastName;
+    private Integer loginAttempts;
 
     @Column(unique = true, length = 100)
     private String email;
@@ -98,5 +99,28 @@ public class User implements Serializable {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public Integer getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    public void setLoginAttempts(Integer loginAttempts) {
+        this.loginAttempts = loginAttempts;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", enabled=" + enabled +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", loginAttempts=" + loginAttempts +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

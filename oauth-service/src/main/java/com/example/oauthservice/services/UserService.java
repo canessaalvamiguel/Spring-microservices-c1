@@ -56,4 +56,9 @@ public class UserService implements UserDetailsService , IUserService{
     public User findByUsername(String username) {
         return client.findByUsername(username);
     }
+
+    @Override
+    public User updateUser(User user, Long id) {
+        return client.updateUser(user, id);
+    }
 }
