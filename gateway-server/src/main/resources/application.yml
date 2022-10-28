@@ -47,3 +47,15 @@ spring:
             - AddRequestHeader=token-request, 123456
             - AddResponseHeader=token-response, 654321
             - AddRequestParameter=name, Miguel
+        - id: oauth-service
+          uri: lb://oauth-service
+          predicates:
+            - Path=/api/security/**
+          filters:
+            - StripPrefix=2
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=2
