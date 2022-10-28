@@ -2,6 +2,7 @@ package com.example.oauthservice.services;
 
 import com.example.oauthservice.clients.UserFeignClient;
 import com.example.usercommons.models.User;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,30 +27,31 @@ public class UserService implements UserDetailsService , IUserService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = client.findByUsername(username);
 
-        if(user == null){
-            log.error("Login error. User "+username+" not found.");
+        try {
+            User user = client.findByUsername(username);
+
+            List<GrantedAuthority> authorities = user.getRoles()
+                    .stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .peek(authority -> log.info("Role: " + authority.getAuthority()))
+                    .collect(Collectors.toList());
+
+            log.info("User " + username + " authenticated successfully");
+
+            return new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getEnabled(),
+                    true,
+                    true,
+                    true,
+                    authorities
+            );
+        }catch (FeignException e){
+            log.error("Login error. User " + username + " not found.");
             throw new UsernameNotFoundException("Login error. User "+username+" not found.");
         }
-
-        List<GrantedAuthority> authorities = user.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .peek(authority -> log.info("Role: "+authority.getAuthority()))
-                .collect(Collectors.toList());
-
-        log.info("User "+username+" authenticated successfully");
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getEnabled(),
-                true,
-                true,
-                true,
-                authorities
-        );
     }
 
     @Override
