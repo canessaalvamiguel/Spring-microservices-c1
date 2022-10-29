@@ -1,5 +1,6 @@
 package com.example.oauthservice.services;
 
+import brave.Tracer;
 import com.example.oauthservice.clients.UserFeignClient;
 import com.example.usercommons.models.User;
 import feign.FeignException;
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService , IUserService{
 
     private final UserFeignClient client;
+    private final Tracer tracer;
     private Logger log = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserFeignClient client) {
+    public UserService(UserFeignClient client, Tracer tracer) {
         this.client = client;
+        this.tracer = tracer;
     }
 
     @Override
@@ -49,8 +52,12 @@ public class UserService implements UserDetailsService , IUserService{
                     authorities
             );
         }catch (FeignException e){
+            String value = "Login error. User "+username+" not found.";
+
             log.error("Login error. User " + username + " not found.");
-            throw new UsernameNotFoundException("Login error. User "+username+" not found.");
+            tracer.currentSpan().tag("error.message", value + ": "+e.getMessage());
+
+            throw new UsernameNotFoundException(value);
         }
     }
 

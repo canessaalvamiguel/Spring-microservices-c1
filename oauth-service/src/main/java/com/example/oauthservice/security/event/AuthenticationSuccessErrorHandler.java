@@ -1,5 +1,6 @@
 package com.example.oauthservice.security.event;
 
+import brave.Tracer;
 import com.example.oauthservice.services.IUserService;
 import com.example.usercommons.models.User;
 import feign.FeignException;
@@ -18,10 +19,12 @@ public class AuthenticationSuccessErrorHandler implements AuthenticationEventPub
     private Logger log = LoggerFactory.getLogger(AuthenticationSuccessErrorHandler.class);
 
     private final IUserService userService;
+    private final Tracer tracer;
     private static final Integer MAX_LOGGIN_ATEMPTS = 3;
 
-    public AuthenticationSuccessErrorHandler(IUserService userService) {
+    public AuthenticationSuccessErrorHandler(IUserService userService, Tracer tracer) {
         this.userService = userService;
+        this.tracer = tracer;
     }
 
     @Override
@@ -42,22 +45,34 @@ public class AuthenticationSuccessErrorHandler implements AuthenticationEventPub
 
     @Override
     public void publishAuthenticationFailure(AuthenticationException e, Authentication authentication) {
-        log.error("Failed to login user. Error: "+e.getMessage());
+        String messageError = "Failed to login user. Error: "+e.getMessage();
+        log.error(messageError);
 
         try{
+            StringBuilder errors = new StringBuilder();
+            errors.append(messageError);
+
             User user = userService.findByUsername(authentication.getName());
             if(user.getLoginAttempts() == null)
                 user.setLoginAttempts(0);
 
             user.setLoginAttempts(user.getLoginAttempts() + 1);
-            log.info(String.format("User %s current login attempts %s", user.getUsername(), user.getLoginAttempts()));
+
+            String errorAttempts = String.format("User %s current login attempts %s", user.getUsername(), user.getLoginAttempts());
+            log.info(errorAttempts);
+            errors.append(errorAttempts);
 
             if(user.getLoginAttempts() >= MAX_LOGGIN_ATEMPTS){
-                log.error(String.format("User %s was disabled due to max logging attempts reached", user.getUsername()));
+                String errorUserDisabled = String.format("User %s was disabled due to max logging attempts reached", user.getUsername());
+                log.error(errorUserDisabled);
+                errors.append(errorUserDisabled);
+
                 user.setEnabled(false);
             }
 
             userService.updateUser(user, user.getId());
+
+            tracer.currentSpan().tag("error.message", errors.toString());
 
         }catch (FeignException exception){
             log.error(String.format("User %s not found", authentication.getName()));
