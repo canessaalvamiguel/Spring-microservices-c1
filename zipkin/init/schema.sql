@@ -12,6 +12,9 @@
 -- the License.
 --
 
+CREATE SCHEMA `zipkin` CHARACTER  SET utf8 COLLATE utf8_general_ci;
+USE zipkin;
+
 CREATE TABLE IF NOT EXISTS zipkin_spans (
   `trace_id_high` BIGINT NOT NULL DEFAULT 0 COMMENT 'If non zero, this means the trace uses 128 bit traceIds instead of 64 bit',
   `trace_id` BIGINT NOT NULL,
@@ -60,3 +63,6 @@ CREATE TABLE IF NOT EXISTS zipkin_dependencies (
   `error_count` BIGINT,
   PRIMARY KEY (`day`, `parent`, `child`)
 ) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARACTER SET=utf8 COLLATE utf8_general_ci;
+
+CREATE USER 'zipkin'@'%' IDENTIFIED WITH mysql_native_password BY 'zipkin';
+GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE, SHOW VIEW ON zipkin.* TO 'zipkin'@'%';

@@ -1,0 +1,122 @@
+version: '3.7'
+
+services:
+  config-server:
+    image: config-server:v1
+    ports:
+      - "8888:8888"
+    restart: always
+    networks:
+      - springcloud-c1
+  eureka-server-service:
+    image: eureka-server-service:v1
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - springcloud-c1
+  mysql-springcloud-c1:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    restart: always
+    networks:
+      - springcloud-c1
+    environment:
+      MYSQL_DATABASE: db_spring_cloud
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./zipkin/init:/docker-entrypoint-initdb.d/:ro
+  postgres-springcloud-c1:
+    image: postgres:12-alpine
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      - springcloud-c1
+    environment:
+      POSTGRES_DB: db_spring_cloud
+      POSTGRES_PASSWORD: docker
+  products-service:
+    image: products-service:v1
+    restart: always
+    networks:
+      - springcloud-c1
+    depends_on:
+      - config-server
+      - eureka-server-service
+      - mysql-springcloud-c1
+  service-items:
+    image: service-items:v1
+    ports:
+      - "8002:8002"
+      - "8005:8005"
+      - "8007:8007"
+    restart: always
+    networks:
+      - springcloud-c1
+    depends_on:
+      - config-server
+      - eureka-server-service
+      - products-service
+  user-service:
+    image: user-service:v1
+    restart: always
+    networks:
+      - springcloud-c1
+    depends_on:
+      - config-server
+      - eureka-server-service
+      - postgres-springcloud-c1
+  oauth-service:
+    image: oauth-service:v1
+    ports:
+      - "9100:9100"
+    restart: always
+    networks:
+      - springcloud-c1
+    depends_on:
+      - config-server
+      - eureka-server-service
+      - user-service
+  zuul-server-service:
+    image: zuul-server-service:v1
+    ports:
+      - "8090:8090"
+    restart: always
+    networks:
+      - springcloud-c1
+    depends_on:
+      - config-server
+      - eureka-server-service
+      - products-service
+      - service-items
+      - user-service
+      - oauth-service
+  rabbitmq-server:
+    image: rabbitmq:3.10-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    restart: always
+    networks:
+      - springcloud-c1
+  zipkin-server:
+    image: zipkin-server:v1
+    ports:
+      - "9411:9411"
+    restart: always
+    networks:
+      - springcloud-c1
+    depends_on:
+      - rabbitmq-server
+      - mysql-springcloud-c1
+    environment:
+      RABBIT_ADDRESSES: rabbitmq-server:5672
+      STORAGE_TYPE: mysql
+      MYSQL_USER: zipkin
+      MYSQL_PASS: zipkin
+      MYSQL_HOST: mysql-springcloud-c1
+networks:
+  springcloud-c1:
+    external: true
